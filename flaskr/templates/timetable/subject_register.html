@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Subjects Registration{% endblock title %}</h1>
+
+{% endblock %}
+
+{% block content %}
+<p>subject name</p>
+<form action="{{ url_for('timetable.subject_register') }}" method="post">
+    <button type="submit" name="action" value="timetable">timetable</button>
+    <p>subject</p>   
+    <input type="text" id="subject_name" name="subject_name" required>
+    <p>teacher</p>   
+    <input type="text" id="teacher" name="teacher" required>
+    <p>class room</p>   
+    <input type="text" id="classroom" name="classroom" required>
+
+    <p>assignments</p>
+    <p>contents</p>
+    <input type="text" id="contents" name="contents">
+    <p>deadline</p>
+    <input type="date" id="deadline" name="deadline">
+
+    <button type="submit" name="action" value="delete">delete</button>
+    <button type="submit" name="action" value="save">save</button>
+</form>
+
+
+{% endblock %}
+
+
+
+
+
+

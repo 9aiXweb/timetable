@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Timetable{% endblock title %}</h1>
+
+{% endblock %}
+
+{% block content %}
+
+<p>subject name</p>
+<form action="{{ url_for('timetable.subject_register') }}" method="post">
+    <button type="submit" name="action">subject register</button>
+    <button type="submit" name="action" value="edit">subject edit</button>
+</form>
+
+<h2>時間割表</h2>
+
+<table>
+    <tr>
+        <th></th>
+        <th>月</th>
+        <th>火</th>
+        <th>水</th>
+        <th>木</th>
+        <th>金</th>
+    </tr>
+    <tr>
+        <td>1限</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>2限</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>3限</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>4限</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>5限</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>6限</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
+
+{% endblock %}
+
+
+
+
+
+
