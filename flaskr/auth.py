@@ -93,6 +93,12 @@ def login():
             "SELECT * FROM user WHERE username = ?", (username,)
         ).fetchone()
 
+        """ 
+        - SELECT : 選択
+        - UPDATE :　更新
+        - INSERT : 挿入
+        """
+
         if user is None:
             error = "Incorrect username."
         elif not check_password_hash(user["password"], password):
