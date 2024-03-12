@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS subject;
 DROP TABLE IF EXISTS assignment;
- 
+DROP TABLE IF EXISTS timetable;
 --  User Information
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +26,7 @@ CREATE TABLE post (
 -- Subject DB (database)
 CREATE TABLE subject (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    subject_name TEXT UNIQUE NOT NULL,
+    subject_name TEXT NOT NULL,
     teacher_name TEXT,
     classroom INTEGER
 );
@@ -40,4 +40,11 @@ CREATE TABLE assignment (
     classroom INTEGER,
     FOREIGN KEY (subject_name) REFERENCES subject (subject_name),
     FOREIGN KEY (classroom) REFERENCES subject (classroom)
+);
+
+CREATE TABLE timetable(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time TEXT  NOT NULL,
+    subject_name TEXT NOT NULL,
+    FOREIGN KEY (subject_name) REFERENCES subject (subject_name)
 );

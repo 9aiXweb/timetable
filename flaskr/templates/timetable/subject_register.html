@@ -10,17 +10,17 @@
 <form action="{{ url_for('timetable.subject_register') }}" method="post">
     <button type="submit" name="action" value="timetable">timetable</button>
     <p>subject</p>   
-    <input type="text" id="subject_name" name="subject_name" required>
+    <input type="text" id="subject_name" name="subject_name" value="{{ subject_data['subject_name'] }}"required>
     <p>teacher</p>   
-    <input type="text" id="teacher" name="teacher" required>
+    <input type="text" id="teacher" name="teacher" value="{{ subject_data['teacher_name'] }}"required>
     <p>class room</p>   
-    <input type="text" id="classroom" name="classroom" required>
+    <input type="text" id="classroom" name="classroom" value="{{ subject_data['classroom'] }}" required>
 
     <p>assignments</p>
     <p>contents</p>
-    <input type="text" id="contents" name="contents">
+    <input type="text" id="contents" value="{{ assignments_data['contents'] }}" name="contents">
     <p>deadline</p>
-    <input type="date" id="deadline" name="deadline">
+    <input type="date" id="deadline" name="deadline" value="{{ assignments_data['deadline'] }}" >
 
     <button type="submit" name="action" value="delete">delete</button>
     <button type="submit" name="action" value="save">save</button>
