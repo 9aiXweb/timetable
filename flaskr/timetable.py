@@ -131,7 +131,7 @@ def index():
     elif timetable_select is not None:
         flash("3")
        
-        if  timetable_data is None:
+        if  timetable_data is not None and len(timetable_data) > 0:
             flash("4")     
 
             # timetableデータを行列に埋め込む
@@ -151,7 +151,7 @@ def index():
        
     else:
         timetable_table = [[""] * 7 for _ in range(7)]
-    return render_template("timetable/index.html", days_order=None, timetable_data=None, tables=None, table_name=None)
+    #return render_template("timetable/index.html", days_order=None, timetable_data=None, tables=None, table_name=None)
     """ 
         print("--------------------------------------------------------------")
         print(timetable_table) 
@@ -180,7 +180,7 @@ def index():
             ).fetchall()
     
     
-    return render_template("timetable/index.html", days_order=days_order, timetable_data=timetable_table, tables=timetables, table_name=timetable_select["table_name"])
+    return render_template("timetable/index.html", days_order=days_order, timetable_data=timetable_table, tables=timetables, table_name=timetable_select["table_name"], vertical_length=vertical_length)
 
 
 def get_post(id, check_author=True):
@@ -392,7 +392,7 @@ def timetable_register():
             
             if not (table_name and vertical and horizontal):
                 return render_template("timetable/timetable_register.html")
-            elif not (0 <= int(horizontal) and int(horizontal)<= 7):
+            elif not (2 <= int(horizontal) and int(horizontal)<= 7):
                 return render_template("timetable/timetable_register.html")
             db = get_db()
             db.execute("INSERT INTO timetable_select (table_name, vertical, horizontal) VALUES (?, ?, ?)", 
