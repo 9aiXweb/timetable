@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Timetable Registration{% endblock title %}</h1>
+
+{% endblock %}
+
+{% block content %}
+<p>subject name</p>
+<form action="{{ url_for('timetable.timetable_register') }}" method="post">
+    <p>table name</p>   
+    <input type="text" id="table_name" name="table_name" required>
+    <p>vertical length</p>   
+    <input type="text" id="vertical" name="vertical" required>
+    <p>horizotal length</p>   
+    <input type="text" id="horizontal" name="horizontal" required>
+
+    <button type="submit" name="action" value="delete">delete</button>
+    <button type="submit" name="action" value="save">save</button>
+</form>
+
+
+{% endblock %}
+
+
+
+
+
+

@@ -6,6 +6,9 @@ DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS subject;
 DROP TABLE IF EXISTS assignment;
 DROP TABLE IF EXISTS timetable;
+DROP TABLE IF EXISTS timetable_select;
+
+
 --  User Information
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,7 +47,17 @@ CREATE TABLE assignment (
 
 CREATE TABLE timetable(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_id INTEGER NOT NULL,
     time TEXT  NOT NULL,
     subject_name TEXT NOT NULL,
     FOREIGN KEY (subject_name) REFERENCES subject (subject_name)
 );
+
+
+CREATE TABLE timetable_select(
+    table_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_name TEXT NOT NULL,
+    vertical INTEGER NOT NULL,
+    horizontal INTEGER NOT NULL,
+    FOREIGN KEY (table_id) REFERENCES timetable (table_id) 
+)

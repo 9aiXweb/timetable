@@ -1,12 +1,5 @@
-from flask import Blueprint
-from flask import flash
-from flask import g
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask import session
-from flask import flash
+from flask import Blueprint, flash, g, redirect \
+, render_template, request, url_for, session, flash
 from werkzeug.exceptions import abort
 from datetime import datetime
 import re
@@ -17,12 +10,10 @@ from flaskr.db import get_db
 bp = Blueprint("timetable", __name__)
 
 def notify():
-    # flash("notice")
-    today = datetime.date.today()
+    today = datetime.now()
     today_str = today.strftime("%Y-%m-%d")
     today = datetime.strptime(today_str, "%Y-%m-%d")
     
-
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT subject_name, deadline FROM assignment")
@@ -43,7 +34,7 @@ def notify():
 def index():
     notify()
     days_order = ["getu", "ka", "sui", "moku", "kin"]
-    timetable_table = [[""] * 7 for _ in range(7)]
+    
     if request.method == "POST":
         
         if request.form.get('action') is not None:
@@ -59,7 +50,7 @@ def index():
                 if(is_subject):
                     subject = is_subject["subject_name"]
                     subject_data = db.execute(
-                    "SELECT * FROM subject WHERE subject_name = ?", (subject ,)
+                    "SELECT * FROM subject WHERE subject_name = ?, subject_name = ?", (subject , session["table_id"],)
                     ).fetchone()
                     assignments_data = db.execute(
                     "SELECT * FROM assignment WHERE subject_name = ?", (subject ,)
@@ -86,27 +77,82 @@ def index():
                        )
             db.commit()
             return redirect(url_for("index"))
+    #現在表示しているtimetableを取得
+    if session.get("table_id") is not None:
+        timetable_id = session["table_id"]
+
+    else:
+        db = get_db()
+        cursor = db.cursor()
+            # 最小のtable_idを取得するクエリを実行
+        cursor.execute("SELECT MIN(table_id) FROM timetable_select")
+        
+        # 結果を取得
+        min_table_id = cursor.fetchone()[0]
+
+        
+        session["table_id"] = min_table_id
+        timetable_id = session["table_id"]
+
+
+        if min_table_id is None:
+            return render_template("timetable/timetable_register.html")
+
     db = get_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT time, subject_name FROM timetable")
-    timetable_data = cursor.fetchall()
-    db.close()
+    # cursor = db.cursor()
+    # cursor.execute("SELECT time, subject_name FROM timetable WHERE table_id = timetable_id")
+    # cursor.execute("SELECT time, subject_name, table_id  FROM timetable")
+    # timetable_data = cursor.fetchall()
+    timetable_select = db.execute(
+            "SELECT vertical, horizontal, table_name FROM timetable_select WHERE table_id = ?", (timetable_id,)
+            ).fetchone()
+    timetable_data = db.execute(
+            "SELECT subject_name, time FROM timetable WHERE table_id = ?", (timetable_id,)
+            ).fetchall()   
+    
     """
     [[getu_1, getu_2, ...],
     [ka_1, ka_2, ...],
     ]
     """
-    
-    if timetable_data is not None:      
 
-        # timetableデータを行列に埋め込む
-        for n in range(0, len(days_order)+1):
-            for time, subject_name in timetable_data:
-                for day_index, day in enumerate(days_order):
-                    if f"{day}_{n}" in time:
-                        timetable_table[day_index][n-1] = subject_name
-        
-        """ 
+
+
+
+    vertical_length = int(timetable_select["vertical"])
+    horizontal_length = int(timetable_select["horizontal"])
+    # vertical_length = int(timetable_select["vertical"])
+    # horizontal_length = int(timetable_select["horizontal"])
+
+    if (vertical_length and vertical_length) is None:
+        vertical_length  = 7
+        horizontal_length = 7  
+        timetable_table = [[""] * 7 for _ in range(7)]  
+    elif timetable_select is not None:
+        flash("3")
+       
+        if  timetable_data is None:
+            flash("4")     
+
+            # timetableデータを行列に埋め込む
+            for n in range(0, vertical_length+1):
+                for time, subject_name in timetable_data:
+                    for day_index, day in enumerate(days_order):
+                        if f"{day}_{n}" in time:
+                            timetable_table[day_index][n-1] = subject_name
+        elif timetable_select is not  None:
+            flash("1")
+           
+            timetable_table = [[""] * horizontal_length for _ in range(vertical_length )]
+        else:
+            flash("2")
+            timetable_table = [[""] * 7 for _ in range(7)]  
+
+       
+    else:
+        timetable_table = [[""] * 7 for _ in range(7)]
+    return render_template("timetable/index.html", days_order=None, timetable_data=None, tables=None, table_name=None)
+    """ 
         print("--------------------------------------------------------------")
         print(timetable_table) 
         print("--------------------------------------------------------------")
@@ -123,12 +169,18 @@ def index():
         ['getu', 'ka', 'sui', 'moku', 'kin']
         --------------------------------------------------------------
         """
-
        
 
-    if timetable_data is None:
-        timetable_table = [[""] * 7 for _ in range(7)]
-    return render_template("timetable/index.html", days_order=days_order, timetable_data=timetable_table)
+
+    
+
+    db = get_db()
+    timetables= db.execute(
+            "SELECT table_id, table_name FROM timetable_select"
+            ).fetchall()
+    
+    
+    return render_template("timetable/index.html", days_order=days_order, timetable_data=timetable_table, tables=timetables, table_name=timetable_select["table_name"])
 
 
 def get_post(id, check_author=True):
@@ -295,4 +347,70 @@ def subject_register():
             return render_template("timetable/subject_register.html", subject_data=None, assignments_data=None)
     return render_template("timetable/subject_register.html", subject_data=None, assignments_data=None)
 
+
+@bp.route("/table", methods=("GET", "POST"))
+# @login_required
+def timetable_register():
+    """Create a new post for the current user."""
+    if request.method == "POST":
+        if request.form.get('table_name')  is None:
+            return render_template("timetable/timetable_register.html")
+
+        action = request.form["action"]
+        table_name = request.form['table_name']
+        vertical = request.form['vertical']
+        horizontal = request.form['horizontal']
+
+        if action == 'delete':
+            """
+            assignmentまたはsubjectにsubjectが存在するとき, 削除してindex.htmlに戻る.
+            databaseにsubject, assignmentが存在しないとき, index.htmlに戻る.
+            """
+            db = get_db()
+            table_data = db.execute(
+            "SELECT * FROM timetable_select WHERE table_name = ?", (table_name,)
+            ).fetchone()
+
+            if table_data["table_name"] is table_name:
+                db.execute(
+                "DELETE * FROM timetable_select WHERE table_name = ?", (table_name,)
+                 ).fetchone()
+                db.commit()
+                db.execute(
+                "DELETE * FROM timetable WHERE table_id = ?", (table_data["table_id"] ,)
+                 ).fetchone()
+                db.commit()
+                if table_data["table_id"] == session["table_id"]:
+                    session["table_id"] = ""
+
+            return redirect(url_for("timetable.index"))
+        elif action == 'save':
+            """
+            databaseにsubjectが存在するとき, 更新を行い, index.htmlに戻る.
+            databaseにsubjectが存在しないとき, 新たにsubjectを登録してindex.htmlに戻る.
+            """
+            
+            if not (table_name and vertical and horizontal):
+                return render_template("timetable/timetable_register.html")
+            elif not (0 <= int(horizontal) and int(horizontal)<= 7):
+                return render_template("timetable/timetable_register.html")
+            db = get_db()
+            db.execute("INSERT INTO timetable_select (table_name, vertical, horizontal) VALUES (?, ?, ?)", 
+                       (table_name , int(vertical) , int(horizontal))
+                       )
+
+            db.commit()
+
+            
+            return redirect(url_for("index"))
+        else:
+            
+            return render_template("timetable/timetable_register.html")
+    return render_template("timetable/timetable_register.html")
+
+@bp.route("/select_table", methods=("POST",))
+def select_table():
+    table_id = request.form["table_id"]
+    session["table_id"] = table_id
+    return redirect("/")
 

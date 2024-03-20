@@ -50,3 +50,6 @@ def create_app(test_config=None):
     app.secret_key = os.urandom(24)
 
     return app
+
+    if __name__ == '__main__':
+        app.run(debug = True)
