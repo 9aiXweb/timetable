@@ -39,7 +39,7 @@ CREATE TABLE assignment (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     subject_name TEXT NOT NULL,
     contents TEXT,
-    deadline TEXT NOT NULL,
+    deadline TEXT,
     classroom INTEGER,
     FOREIGN KEY (subject_name) REFERENCES subject (subject_name),
     FOREIGN KEY (classroom) REFERENCES subject (classroom)
@@ -53,6 +53,7 @@ CREATE TABLE timetable(
     FOREIGN KEY (subject_name) REFERENCES subject (subject_name)
 );
 
+-- [ id, table_id1, time, subject_name], [ id, table_id2, time, subject_name], [ id, table_id1
 
 CREATE TABLE timetable_select(
     table_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,4 +61,4 @@ CREATE TABLE timetable_select(
     vertical INTEGER NOT NULL,
     horizontal INTEGER NOT NULL,
     FOREIGN KEY (table_id) REFERENCES timetable (table_id) 
-)
+);

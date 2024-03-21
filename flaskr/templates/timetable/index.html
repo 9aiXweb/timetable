@@ -6,12 +6,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<!-- <div class="container">
     {% for message in get_flashed_messages() %}
-    <div class="alert alert-success"></div>
+        <div class="alert alert-success">
+        </div>
     {% endfor %}
-    {% block body %}{% endblock %}
-</div>
+</div> -->
 
 <form action="{{ url_for('timetable.subject_register') }}" method="post">
     <button type="submit" name="action">subject register</button>
@@ -23,7 +23,7 @@
     <!-- <button type="submit" name="action" value="edit">subject edit</button> -->
 </form>
 
-<!-- TODO -->
+
 {% if tables %}
 <form action="{{ url_for('timetable.select_table') }}" method="post">
     {% for table in tables %}
@@ -40,24 +40,26 @@
 {% endif %}
 
 <h2>時間割表</h2>
+
 {% if table_name %}
 <h3>{{ table_name }}</h3>
 <form action="{{ url_for('timetable.index') }}" method="post">
+    <button type="submit" value="subject_delete" name="subject_delete">Delete</button>
 
     <table>
         <tr>
             <th></th>
-            <th>月</th>
-            <th>火</th>
-            <th>水</th>
-            <th>木</th>
-            <th>金</th>
+            {% for day in dayoftheweek %}
+                <th>{{ day }}</th>
+            {% endfor %}
         </tr>
         {% for n  in range(1, vertical_length+1 ) %}
             <tr>
                 <td>{{ n }}限</td>
                 {% for day in days_order %}
                     <td>
+                        <input type="checkbox" name="checkbox" value="{{ day }}_{{ n }}">
+
                         <button type="submit" name="action" value="{{ day }}_{{ n }}">
                             {{ timetable_data[loop.index-1][n-1] }}
                         </button>
