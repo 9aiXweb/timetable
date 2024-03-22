@@ -108,7 +108,6 @@ def login():
             # store the user id in a new session and return to the index
             session.clear()
             session["user_id"] = user["id"]
-            session["table_id"] = None
             return redirect(url_for("index"))
 
         flash(error)

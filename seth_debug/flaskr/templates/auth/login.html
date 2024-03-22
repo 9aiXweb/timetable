@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block content %}
-  <form action="{{ url_for('auth.login') }}" method="post">
-    <label for="username">Username</label>
+  <form method="post">
+    <label for="username">Mail-Address</label>
     <input name="username" id="username" required>
     <label for="password">Password</label>
     <input type="password" name="password" id="password" required>

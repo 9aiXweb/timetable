@@ -29,35 +29,27 @@ CREATE TABLE post (
 -- Subject DB (database)
 CREATE TABLE subject (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
     subject_name TEXT NOT NULL,
     teacher_name TEXT,
-    classroom INTEGER,
-    color TEXT,
-    FOREIGN KEY (user_id) REFERENCES user (id)
+    classroom INTEGER
 );
 
 -- Assignment DB
 CREATE TABLE assignment (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
     subject_name TEXT NOT NULL,
     contents TEXT,
     deadline TEXT,
     classroom INTEGER,
     FOREIGN KEY (subject_name) REFERENCES subject (subject_name),
-    FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (classroom) REFERENCES subject (classroom)
 );
 
 CREATE TABLE timetable(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
     table_id INTEGER NOT NULL,
     time TEXT  NOT NULL,
     subject_name TEXT NOT NULL,
-    color TEXT,
-    FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (subject_name) REFERENCES subject (subject_name)
 );
 
@@ -65,10 +57,8 @@ CREATE TABLE timetable(
 
 CREATE TABLE timetable_select(
     table_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
     table_name TEXT NOT NULL,
     vertical INTEGER NOT NULL,
     horizontal INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (table_id) REFERENCES timetable (table_id) 
 );

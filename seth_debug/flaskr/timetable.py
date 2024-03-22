@@ -17,7 +17,7 @@ def notify():
     
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT subject_name, deadline FROM assignment WHERE user_id = ?", (session["user_id"],))
+    cursor.execute("SELECT subject_name, deadline FROM assignment")
     deadline_data = cursor.fetchall()
     
     for subject_name, deadline in deadline_data:
@@ -32,23 +32,20 @@ def notify():
 
 
 @bp.route("/", methods=("GET", "POST"))
-@login_required
 def index():
-    delete_checked = False
     dayoftheweek = ["月", "火", "水", "木", "金", "土", "日"]
 
     notify()
     days_order = ["getu", "ka", "sui", "moku", "kin", "do", "niti"]
   #現在表示しているtimetableを取得
     if session.get("table_id") is not None:
-        
         timetable_id = session["table_id"]
 
     else:
         db = get_db()
         cursor = db.cursor()
             # 最小のtable_idを取得するクエリを実行
-        cursor.execute("SELECT MIN(table_id) FROM timetable_select WHERE user_id = ?", (session["user_id"],))
+        cursor.execute("SELECT MIN(table_id) FROM timetable_select")
         
         # 結果を取得
         min_table_id = cursor.fetchone()[0]
@@ -63,8 +60,6 @@ def index():
    
     
     if request.method == "POST":
-        if request.form.get('select_delete') is not None:
-            delete_checked = True
         #チェックボックスによる教科の削除
         if request.form.get('subject_delete') is not None:
             
@@ -77,10 +72,9 @@ def index():
                 for subject in check_list:
                     
                     db.execute(
-                    "DELETE FROM timetable WHERE time = ? AND table_id = ? AND table_id = ?", (subject, timetable_id, session["user_id"], )
+                    "DELETE FROM timetable WHERE time = ? AND table_id = ?", (subject, timetable_id, )
                     ).fetchone()
                 db.commit()
-            delete_checked = False
 
             
         
@@ -91,17 +85,17 @@ def index():
                 db = get_db()
                 cursor = db.cursor()
                 is_subject = db.execute(
-                "SELECT * FROM timetable WHERE time = ? AND table_id = ? AND user_id = ? ", (action, int(timetable_id) , session["user_id"],)
+                "SELECT * FROM timetable WHERE time = ? AND table_id = ?", (action, int(timetable_id) ,)
                 ).fetchone()
 
                 #時間割に登録された教科を編集するための処理
                 if(is_subject):
                     subject = is_subject["subject_name"]
                     subject_data = db.execute(
-                    "SELECT * FROM subject WHERE subject_name = ? AND user_id = ? ", (subject, session["user_id"],)
+                    "SELECT * FROM subject WHERE subject_name = ?", (subject,)
                     ).fetchone()
                     assignments_data = db.execute(
-                    "SELECT * FROM assignment WHERE subject_name = ? AND user_id = ? ", (subject , session["user_id"],)
+                    "SELECT * FROM assignment WHERE subject_name = ?", (subject ,)
                     ).fetchone()
                     return render_template("timetable/subject_register.html", subject_data=subject_data, assignments_data=assignments_data)
                 
@@ -111,34 +105,19 @@ def index():
                 db.close()
                 session['time'] = action
                 return render_template("timetable/subject_select.html", subject_all=subject_all)
-        
-
         selected_subject = request.form.get('selected_subject')
         if selected_subject:
-            
           
             """
             timeのデータを保存する必要がある
-            1. subjectデータベースを取得.
-            2. 選択された教科の色を取得.
-            3. timetableでデータベースに登録する.
-
-            html側でやること
-            変数timetable_dataのcolorに応じてbackgroundcolorを変更.(style="background-color: {{}};")
             """
             db = get_db()         
             time = session['time']
             
-            subject_data = db.execute("SELECT * FROM subject WHERE subject_name = ? AND user_id = ?", 
-                       (selected_subject, session["user_id"])
-                       ).fetchone()
-            color = subject_data["color"]
-            # if color is None:
-            #     color = "#FFFFFF"
-
-            db.execute("INSERT INTO timetable (time, subject_name, color, table_id, user_id) VALUES (?, ?, ?, ?, ?)", 
-                       (time, selected_subject, color, timetable_id, session["user_id"],)
-                       ).fetchone()
+            
+            db.execute("INSERT INTO timetable (time, subject_name, table_id) VALUES (?, ?, ?)", 
+                       (time, selected_subject, timetable_id)
+                       )
             db.commit()
             return redirect(url_for("index"))
 
@@ -150,10 +129,10 @@ def index():
     # cursor.execute("SELECT time, subject_name, table_id  FROM timetable")
     # timetable_data = cursor.fetchall()
     timetable_select = db.execute(
-            "SELECT vertical, horizontal, table_name FROM timetable_select WHERE table_id = ? AND user_id = ?", (timetable_id, session["user_id"],)
+            "SELECT vertical, horizontal, table_name FROM timetable_select WHERE table_id = ?", (timetable_id,)
             ).fetchone()
     timetable_data = db.execute(
-            "SELECT subject_name, time, color FROM timetable WHERE table_id = ? AND user_id = ?", (timetable_id, session["user_id"],)
+            "SELECT subject_name, time FROM timetable WHERE table_id = ?", (timetable_id,)
             ).fetchall()   
     
     """
@@ -171,27 +150,24 @@ def index():
         vertical_length  = 7
         horizontal_length = 7  
         timetable_table = [[""] * 7 for _ in range(7)]  
-        # timetable_table_color = [[""] * 7 for _ in range(7)] 
     elif timetable_select is not None:
        
        
         if  timetable_data is not None and len(timetable_data) > 0:
 
             timetable_table = [[""] * vertical_length for _ in range(horizontal_length)]  
-            # timetable_table_color = [[""] * vertical_length for _ in range(horizontal_length)]  
             
 
-            # # # timetableデータを行列に埋め込む
+
+            # # timetableデータを行列に埋め込む
             for n in range(1, vertical_length+1):
-                for subject_name, time, color in timetable_data:
+                for subject_name, time in timetable_data:
                     for day_index, day in enumerate(days_order):#曜日
                         if f"{day}_{n}" in time:
                             timetable_table[day_index][n-1] = subject_name
-                            # timetable_table_color[day_index][n-1] = color
         else:
             
             timetable_table = [[""] * vertical_length for _ in range(horizontal_length)]  
-            # timetable_table_color = [[""] * vertical_length for _ in range(horizontal_length)]  
             
         # else:
         #     flash("2")
@@ -220,21 +196,15 @@ def index():
         """
 
     db = get_db()
-    timetables = db.execute(
-    "SELECT table_id, table_name FROM timetable_select WHERE user_id = ?",
-    (session["user_id"], )
-    ).fetchall()
+    timetables= db.execute(
+            "SELECT table_id, table_name FROM timetable_select"
+            ).fetchall()
+    print(timetable_table)
     
-    subject_color = db.execute(
-        "SELECT subject_name, color FROM subject WHERE user_id = ?",
-        (session["user_id"],)
-    ).fetchall()
-    
-
     return render_template("timetable/index.html", days_order=days_order[:horizontal_length], 
-                           timetable_data=timetable_table, tables=timetables, subject_color = subject_color,
+                           timetable_data=timetable_table, tables=timetables, 
                            table_name=timetable_select["table_name"], vertical_length=vertical_length,
-                           dayoftheweek=dayoftheweek[:horizontal_length], delete_checked=delete_checked)
+                           dayoftheweek=dayoftheweek[:horizontal_length])
 
 
 def get_post(id, check_author=True):
@@ -340,12 +310,11 @@ def delete(id):
 databaseのsubjectを更新する.
 """
 @bp.route("/subject", methods=("GET", "POST"))
-@login_required
+# @login_required
 def subject_register():
     """Create a new post for the current user."""
     if request.method == "POST":
-        if (request.form.get('subject_name') and request.form.get('color')) is None:
-        
+        if request.form.get('subject_name') is None:
             return render_template("timetable/subject_register.html", subject_data=None, assignments_data=None)
 
         action = request.form['action']
@@ -354,17 +323,16 @@ def subject_register():
         classroom = request.form['classroom']
         contents = request.form['contents']
         deadline = request.form['deadline']
-        color = request.form['color']
 
         db = get_db()
         subject_data = db.execute(
-            "SELECT * FROM subject WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
+            "SELECT * FROM subject WHERE subject_name = ?", (subject_name,)
             ).fetchone()
         assignment_data = db.execute(
-            "SELECT * FROM assignment WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
+            "SELECT * FROM assignment WHERE subject_name = ?", (subject_name,)
             ).fetchone()
         timetable_data = db.execute(
-            "SELECT * FROM timetable WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
+            "SELECT * FROM timetable WHERE subject_name = ?", (subject_name,)
             ).fetchone()
 
         if action == 'delete':
@@ -375,16 +343,16 @@ def subject_register():
             
             if subject_data["subject_name"] == subject_name:
                 db.execute(
-                "DELETE FROM subject WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
+                "DELETE FROM subject WHERE subject_name = ?", (subject_name,)
                  ).fetchone()
                 db.commit()
             if assignment_data["subject_name"] == subject_name:
                 db.execute(
-                "DELETE FROM assignment  WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
+                "DELETE FROM assignment  WHERE subject_name = ?", (subject_name,)
                  ).fetchone()
                 db.commit()
             if timetable_data["subject_name"] == subject_name:
-                db.execute("DELETE FROM timetable WHERE subject_name = ? AND user_id = ?", (subject_name, session["user_id"], )).fetchone()
+                db.execute("DELETE FROM timetable WHERE subject_name = ?", (subject_name,)).fetchone()
                 db.commit()
             
             return redirect(url_for("timetable.index"))
@@ -401,27 +369,27 @@ def subject_register():
 
             #教科の編集
             if subject_data is not None:
-                db.execute("UPDATE subject SET teacher_name = ?, classroom = ?, color = ? WHERE subject_name = ? AND user_id = ?",
-                            (teacher, classroom, color, subject_name, session["user_id"])
+                db.execute("UPDATE subject SET teacher_name = ?, classroom = ? WHERE subject_name = ?",
+                            (teacher, classroom, subject_name)
                             )
-            elif(subject_name and teacher and classroom and color):
-                db.execute("INSERT INTO subject (subject_name, teacher_name, classroom, user_id, color) VALUES (?, ?, ?, ?, ?)", 
-                        (subject_name, teacher, classroom, session["user_id"], color)
+            elif(subject_name and teacher and classroom):
+                db.execute("INSERT INTO subject (subject_name, teacher_name, classroom) VALUES (?, ?, ?)", 
+                        (subject_name, teacher, classroom)
                         )
             else:
 
-                db.execute("INSERT INTO subject (subject_name, user_id) VALUES (?, ?)", 
-                (subject_name, session["user_id"], )
+                db.execute("INSERT INTO subject (subject_name) VALUES (?)", 
+                (subject_name,)
                 )
 
             #課題の編集
             if (contents and deadline) and (assignment_data is not None):
-                db.execute("UPDATE assignment SET contents = ? , deadline = ? WHERE subject_name = ? AND user_id = ?",
-                            (contents, deadline, subject_name, session["user_id"] )
+                db.execute("UPDATE assignment SET contents = ? , deadline = ? WHERE subject_name = ?",
+                            (contents, deadline, subject_name)
                             )
             elif(contents and deadline):
-                db.execute("INSERT INTO assignment (subject_name, contents, deadline, user_id) VALUES(?, ?, ?, ?)",
-                            (subject_name, contents, deadline, session["user_id"])
+                db.execute("INSERT INTO assignment (subject_name, contents, deadline) VALUES(?, ?, ?)",
+                            (subject_name, contents, deadline)
                             )
             db.commit()
             return redirect(url_for("index"))
@@ -433,7 +401,7 @@ def subject_register():
 
 
 @bp.route("/table", methods=("GET", "POST"))
-@login_required
+# @login_required
 def timetable_register():
     """Create a new post for the current user."""
     if request.method == "POST":
@@ -452,18 +420,18 @@ def timetable_register():
             """
             db = get_db()
             table_data = db.execute(
-            "SELECT * FROM timetable_select WHERE table_name = ? AND user_id = ?", (table_name, session["user_id"], )
+            "SELECT * FROM timetable_select WHERE table_name = ?", (table_name,)
             ).fetchone()
 
 
             if table_data["table_name"] == table_name:
-               
+                print("中に入っている")
                 db.execute(
-                "DELETE FROM timetable_select WHERE table_name = ? AND user_id = ?", (table_name, session["user_id"], )
+                "DELETE FROM timetable_select WHERE table_name = ?", (table_name,)
                  ).fetchone()
                 db.commit()
                 db.execute(
-                "DELETE  FROM timetable WHERE table_id = ? AND user_id = ?", (table_data["table_id"], session["user_id"], )
+                "DELETE  FROM timetable WHERE table_id = ?", (table_data["table_id"] ,)
                  ).fetchone()
                 db.commit()
 
@@ -483,47 +451,21 @@ def timetable_register():
             elif not (1 <= int(horizontal) and int(horizontal)<= 7):
                 return render_template("timetable/timetable_register.html")
             db = get_db()
-            db.execute("INSERT INTO timetable_select (table_name, vertical, horizontal, user_id) VALUES (?, ?, ?, ?)", 
-                       (table_name , int(vertical) , int(horizontal), session["user_id"])
+            db.execute("INSERT INTO timetable_select (table_name, vertical, horizontal) VALUES (?, ?, ?)", 
+                       (table_name , int(vertical) , int(horizontal))
                        )
 
             db.commit()
 
             
             return redirect(url_for("index"))
-
         else:
             
             return render_template("timetable/timetable_register.html")
     return render_template("timetable/timetable_register.html")
 
 @bp.route("/select_table", methods=("POST",))
-@login_required
 def select_table():
-    if not request.form.get("table_id"):
-        return redirect("/")
-    action = request.form["action"]
-    table_id = int(request.form["table_id"])
-    
-    if action == "select":
-        print("select timetable")
-        session["table_id"] = table_id
-        return redirect("/")
-    elif action == "delete":
-        "databaseにtimetableが存在するとき選択したtimetableを削除する"
-        db = get_db()
-        timetable_select_data = db.execute(
-            "SELECT * FROM timetable_select WHERE table_id = ? AND user_id = ?", (table_id, session["user_id"])
-            ).fetchone()
-        if timetable_select_data is not None and len(timetable_select_data)>0:
-            db.execute("DELETE FROM timetable WHERE table_id = ? AND user_id = ?", (table_id, session["user_id"])).fetchone()
-            db.commit()
-            db.execute("DELETE FROM timetable_select WHERE table_id = ? AND user_id = ?", (table_id, session["user_id"])).fetchone()
-            db.commit()
-
-        #現在表示しているtableを削除した場合
-        if session["table_id"] == table_id:
-            session["table_id"] = None
-        return redirect("/")
-        
-  
+    table_id = request.form["table_id"]
+    session["table_id"] = table_id
+    return redirect("/")

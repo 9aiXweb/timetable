@@ -35,8 +35,7 @@
         
     {% endfor %}
     <br>
-    <button type="submit" name="action" value="select">select timetable</button>
-    <button type="submit" name="action" value="delete">delete timetable</button>
+    <button type="submit" name="action">select timetable</button>
 </form>
 {% endif %}
 
@@ -45,12 +44,7 @@
 {% if table_name %}
 <h3>{{ table_name }}</h3>
 <form action="{{ url_for('timetable.index') }}" method="post">
-    {% if delete_checked %}
     <button type="submit" value="subject_delete" name="subject_delete">Delete</button>
-    {% endif %}
-    {% if not delete_checked %}
-    <button type="submit" value="select_delete" name="select_delete">Select Delete</button>
-    {% endif %}
 
     <table>
         <tr>
@@ -59,42 +53,29 @@
             {% endfor %}
             <th></th>
         </tr>
-        <p> {{ background_color }}</p>
         {% for n  in range(1, vertical_length+1 ) %}
             <tr>
                 {% for day in days_order %}
-                    {% if delete_checked %}
+                    {% if n==1 %} <td class="blue-cell">
+                    {% elif  n==2 %} <td class="red-cell">
+                    {% elif  n==3 %} <td class="gray-cell">
+                    {% elif  n==4 %} <td class="green-cell">
+                    {% elif  n==5 %} <td class="random-cell">
+                    {% elif  n==6 %} <td class="orange-cell">
+                    {% elif  n==7 %} <td class="yellow-cell">
+                    {% endif%}
                     <input type="checkbox" name="checkbox" value="{{ day }}_{{ n }}">
-                    {% endif %}
-                    <td style="background-color: yellowgreen;">
-                    <!-- <p> {{subject_color[0]}}</p>    -->
-                    
-                    {% set outer_loop = loop %}
-                    {% if not timetable_data[loop.index-1][n-1] == "" %}
-                    {% for subject, color in subject_color %}
-                        {%if subject == timetable_data[outer_loop.index-1][n-1]%}
-                            <button class="my-button" type="submit" name="action" value="{{ day }}_{{ n }}" style="background-color: {{color}};">
-                                {{ timetable_data[outer_loop.index-1][n-1] }}
-                            </button>
-                        {% endif %}
-                    {% endfor %}
-                    {% endif %}
-                    {% if  timetable_data[loop.index-1][n-1] == "" %}
-                        <button class="my-button" type="submit" name="action" value="{{ day }}_{{ n }}">
-                            {{ timetable_data[loop.index-1][n-1] }}
-                        </button>
-                    {% endif %}
 
-
+                    <button class="my-button" type="submit" name="action" value="{{ day }}_{{ n }}">
+                        {{ timetable_data[loop.index-1][n-1] }}
+                    </button>
                     </td>
-
 
                 {% endfor %} 
                 <td class="gray-cell">{{ n }}限</td>
             </tr>
         {% endfor %}
     </table>
-
     </form>
    
     {% endif %}
