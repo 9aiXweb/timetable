@@ -135,6 +135,7 @@ def index():
                        (selected_subject, session["user_id"])
                        ).fetchone()
             color = subject_data["color"]
+            
             # if color is None:
             #     color = "#FFFFFF"
 
@@ -356,6 +357,7 @@ def subject_register():
         contents = request.form['contents']
         deadline = request.form['deadline']
         color = request.form['color']
+
 
         db = get_db()
         subject_data = db.execute(
