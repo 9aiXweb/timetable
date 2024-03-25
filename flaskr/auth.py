@@ -10,6 +10,7 @@ from flask import session
 from flask import url_for
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
+from datetime import datetime
 
 from flaskr.db import get_db
 
@@ -63,9 +64,11 @@ def register():
 
         if error is None:
             try:
+                today = datetime.now()
+                today = today.strftime("%Y-%m-%d")
                 db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
+                    "INSERT INTO user (username, password, register_date) VALUES (?, ?, ?)",
+                    (username, generate_password_hash(password), today),
                 )
                 db.commit()
             except db.IntegrityError:
@@ -98,7 +101,6 @@ def login():
         - UPDATE :　更新
         - INSERT : 挿入
         """
-
         if user is None:
             error = "Incorrect username."
         elif not check_password_hash(user["password"], password):
@@ -109,9 +111,17 @@ def login():
             session.clear()
             session["user_id"] = user["id"]
             session["table_id"] = None
+            if request.form["username"]=="admin":
+                cursor = db.cursor()
+                cursor.execute("SELECT id, username, register_date FROM user")
+                all_users = cursor.fetchall()
+                db.close()
+                return render_template("auth/admin.html", all_users=all_users)
             return redirect(url_for("index"))
 
         flash(error)
+
+
 
     return render_template("auth/login.html")
 

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Admin {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>User ID</th>
+        <th>User Name</th>
+        <th>Register Date</th>
+    </tr>
+
+    {% for user in all_users%}
+    <tr style="background-color: rgb(74, 246, 74);">
+        <td>{{user[0]}}</td> 
+        <td>{{user[1]}} </td>  
+        <td>{{user[2]}}</th>
+    </tr> 
+    {%endfor%}
+    
+    
+    
+    
+</table>
+
+{% endblock %}
+
+

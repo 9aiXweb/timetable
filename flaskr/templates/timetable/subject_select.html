@@ -8,16 +8,17 @@
 {% block content %}
 
 <form action="{{ url_for('timetable.index') }}" method="post">
-        <p>subject</p>   
+         
         {% for subject in subject_all %}
-            <ul>
-                <input type="radio" name="selected_subject" value="{{ subject[0] }}">
-                {{ subject[0] }}
-            </ul>
+            <li class="custom-radio-label">
+                <input type="radio" name="selected_subject" value="{{ subject[0] }}" class="custom-radio">
+                <label>{{ subject[0] }}</label>
+            </li>
         {% endfor %}
 
-
+        <div class="button-container">
     <button type="submit" value="save">save</button>
+    </div>
 </form>
 
 {% endblock %}

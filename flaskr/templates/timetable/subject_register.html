@@ -8,26 +8,26 @@
 {% block content %}
 
 <form action="{{ url_for('timetable.subject_register') }}" method="post">
-
+    
     <p>subject</p>   
-    <input type="text" id="subject_name" name="subject_name" value="{{ subject_data['subject_name'] }}"required>
+    <input type="text" class="custom-input" id="subject_name" name="subject_name" placeholder="database" value="{{ subject_data['subject_name'] }}"required>
     <p>teacher</p>   
-    <input type="text" id="teacher" name="teacher" value="{{ subject_data['teacher_name'] }}">
+    <input type="text" class="custom-input" id="teacher" name="teacher" placeholder="櫻井" value="{{ subject_data['teacher_name'] }}">
     <p>class room</p>   
-    <input type="text" id="classroom" name="classroom" value="{{ subject_data['classroom'] }}">
+    <input type="text" class="custom-input" id="classroom" name="classroom" placeholder="501" value="{{ subject_data['classroom'] }}">
 
     <p>assignments</p>
-    <p>contents</p>
-    <input type="text" id="contents" value="{{ assignments_data['contents'] }}" name="contents">
+    <input type="text" class="custom-input" id="contents" placeholder="Pxxx~Pxxx" value="{{ assignments_data['contents'] }}" name="contents">
     <p>deadline</p>
-    <input type="date" id="deadline" name="deadline" value="{{ assignments_data['deadline'] }}" >
+    <input type="date" class="custom-date-input" id="deadline" name="deadline" value="{{ assignments_data['deadline'] }}" >
 
     <label>color
         <input type="color" name="color">
     </label>
-
+    <div class="button-container">
     <button type="submit" name="action" value="delete">delete</button>
     <button type="submit" name="action" value="save">save</button>
+    </div>
 </form>
 
 

@@ -8,14 +8,15 @@
 {% block content %}
 <form action="{{ url_for('timetable.timetable_register') }}" method="post">
     <p>table name</p>   
-    <input type="text" id="table_name" name="table_name" required>
+    <input type="text" class="custom-input" id="table_name" name="table_name" required>
     <p>vertical length</p>   
-    <input type="text" id="vertical" name="vertical">
+    <input type="text" class="custom-input" id="vertical" name="vertical">
     <p>horizotal length</p>   
-    <input type="text" id="horizontal" name="horizontal">
-
+    <input type="text" class="custom-input" id="horizontal" name="horizontal">
+    <div class="button-container">
     <button type="submit" name="action" value="delete">delete</button>
     <button type="submit" name="action" value="save">save</button>
+    </div>
 </form>
 
 

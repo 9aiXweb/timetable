@@ -208,3 +208,114 @@ table td {
   padding: 5px 10px;  /* Optional: Add internal spacing */ 
   border: 3px black;
 }
+
+  /* ボタンのスタイル */
+button {
+    width: 200px;
+    height: 30px;
+    background-color: #6acc6d; /* ボタンの背景色 */
+    color: white; /* テキストの色 */
+    border: none; /* ボーダーをなしに */
+    border-radius: 8px; /* 角丸 */
+    font-size: 16px; /* テキストのフォントサイズ */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 影の追加 */
+    transition: background-color 0.3s; /* ホバー時の色の変化を滑らかに */
+}
+
+/* ボタンのホバー時のスタイル */
+button:hover {
+    background-color: #45a049; /* ホバー時の背景色 */
+}
+
+.button-container {
+  display: flex; /* 横並びにする */
+  gap: 10px; /* ボタン間のスペース */
+  justify-content: center; /* 中央寄せ */
+}
+
+.custom-input {
+  width: 300px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none; /* フォーカス時の枠線を削除 */
+  transition: border-color 0.3s; /* マウスオーバー時のアニメーション */
+}
+
+/* 入力フィールドがフォーカスされたときのスタイル */
+.custom-input:focus {
+  border-color: #4CAF50; /* フォーカス時のボーダーの色 */
+}
+
+h1,h2,h3,span,a,button,section,tr {
+  /*font-family: 'Noto Sans JP', sans-serif;*/
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+
+
+/* ラジオボタンのカスタムスタイル */
+.custom-radio {
+  
+  appearance: none; /* デフォルトのスタイルを無効化 */
+  width: 20px; /* ボタンの幅 */
+  height: 20px; /* ボタンの高さ */
+  border-radius: 50%; /* 円形にする */
+  border: 2px solid #377ba8; /* ボーダーの色と太さ */
+  background-color: transparent; /* 背景色を透明に */
+  outline: none; /* クリック時のフォーカス枠を削除 */
+  cursor: pointer; /* カーソルをポインターに変更 */
+  vertical-align: middle; /* テキストと垂直方向に揃える */
+  margin-right: 8px; /* ラジオボタンとテキストの間隔 */
+}
+
+/* ラジオボタンが選択されたときのスタイル */
+.custom-radio:checked {
+  border-color: #45a049; /* 選択時のボーダーの色 */
+}
+
+/* ラジオボタンが選択されたときの中央のマーク */
+.custom-radio:checked::after {
+  content: ''; /* 疑似要素の内容を空にする */
+  display: block; /* ブロック要素にする */
+  width: 10px; /* マークの幅 */
+  height: 10px; /* マークの高さ */
+  background-color: #45a049; /* マークの色 */
+  border-radius: 50%; /* マークを円形にする */
+  margin: 4px auto; /* マークの位置を調整 */
+}
+
+
+.custom-radio-label {
+  display: flex; /* ラジオボタンとテキストを横並びにする */
+  align-items: center; /* 縦方向に中央揃え */
+  margin-bottom: 8px; /* ラベル間の余白 */
+  list-style-type: none; /* マーカーを削除 */
+}
+
+/* カスタムスタイルの適用 */
+.custom-date-input {
+  /* 任意のスタイルを追加 */
+  padding: 8px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+}
+
+/* カレンダーアイコンのスタイル */
+.custom-date-input::after {
+  content: "\1F4C5"; /* カレンダーアイコンのUnicode */
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none; /* イベントが子要素に透過するのを防ぐ */
+}
+
+/* フォーカス時のスタイル */
+.custom-date-input:focus {
+  border-color: #45a049;
+}

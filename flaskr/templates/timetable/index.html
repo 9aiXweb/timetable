@@ -6,51 +6,59 @@
 {% endblock %}
 
 {% block content %}
-<!-- <div class="container">
-    {% for message in get_flashed_messages() %}
-        <div class="alert alert-success">
-        </div>
-    {% endfor %}
-</div> -->
 
+<div class="button-container">
+<form action="{{ url_for('timetable.timetable_register') }}" method="post">
+    <button type="submit" name="action" >timetable register</button>
+    <!-- <button type="submit" name="action" value="edit">subject edit</button> -->
+</form>
+</div>
+<hr>
+
+{% if tables %}
+<form action="{{ url_for('timetable.select_table') }}" method="post">
+   
+    {% for table in tables %}
+    <li class="custom-radio-label">
+        <input type="radio" name="table_id" value="{{ table[0] }}" class="custom-radio">
+        <label>{{ table[1] }}</label>
+      </li>    
+    {% endfor %}
+
+    <br>
+
+    <div class="button-container">
+        <!-- ボタン1 -->
+        <button type="submit" class="custom-button" name="action" value="select">select timetable</button>
+        <!-- ボタン2 -->
+        <button type="submit" class="custom-button" name="action" value="delete">delete timetable</button>
+    </div>
+</form>
+{% endif %}
+<hr>
+
+<h2>時間割表</h2>
+
+{% if table_name %}
+<h3 style="text-align: center;">{{ table_name }}</h3>
+<hr>
+<div class="button-container">
 <form action="{{ url_for('timetable.subject_register') }}" method="post">
     <button type="submit" name="action">subject register</button>
     <!-- <button type="submit" name="action" value="edit">subject edit</button> -->
 </form>
 
-<form action="{{ url_for('timetable.timetable_register') }}" method="post">
-    <button type="submit" name="action">timetable register</button>
-    <!-- <button type="submit" name="action" value="edit">subject edit</button> -->
-</form>
-
-
-{% if tables %}
-<form action="{{ url_for('timetable.select_table') }}" method="post">
-    {% for table in tables %}
-    <ul>
-    <input type="radio" name="table_id" value="{{ table[0] }}">
-{{ table[1] }}
-</ul>
-    
-        
-    {% endfor %}
-    <br>
-    <button type="submit" name="action" value="select">select timetable</button>
-    <button type="submit" name="action" value="delete">delete timetable</button>
-</form>
-{% endif %}
-
-<h2>時間割表</h2>
-
-{% if table_name %}
-<h3>{{ table_name }}</h3>
 <form action="{{ url_for('timetable.index') }}" method="post">
+    <div class="button-container"></div>
     {% if delete_checked %}
-    <button type="submit" value="subject_delete" name="subject_delete">Delete</button>
+    <button type="submit" value="subject_delete" name="subject_delete">delete</button>
     {% endif %}
     {% if not delete_checked %}
-    <button type="submit" value="select_delete" name="select_delete">Select Delete</button>
+    <button type="submit" value="select_delete" name="select_delete">select delete</button>
     {% endif %}
+</div>
+
+
 
     <table>
         <tr>
@@ -65,7 +73,9 @@
                 {% for day in days_order %}
                 <td style="background-color: yellowgreen;">
                     {% if delete_checked %}
+                    
                     <input type="checkbox" name="checkbox" value="{{ day }}_{{ n }}">
+                   
                     {% endif %}
                     
                     <!-- <p> {{subject_color[0]}}</p>    -->
@@ -99,6 +109,8 @@
     </form>
    
     {% endif %}
+
+
 {% endblock %}
 
 

@@ -12,8 +12,9 @@ bp = Blueprint("timetable", __name__)
 
 def notify():
     today = datetime.now()
-    today_str = today.strftime("%Y-%m-%d")
-    today = datetime.strptime(today_str, "%Y-%m-%d")
+    today = today.strftime("%Y-%m-%d")
+    # today_str = today.strftime("%Y-%m-%d")
+    # today = datetime.strptime(today_str, "%Y-%m-%d")
     
     db = get_db()
     cursor = db.cursor()
@@ -375,19 +376,24 @@ def subject_register():
             assignmentまたはsubjectにsubjectが存在するとき, 削除してindex.htmlに戻る.
             databaseにsubject, assignmentが存在しないとき, index.htmlに戻る.
             """
-            
-            if subject_data["subject_name"] == subject_name:
+            if subject_data is None:
+                return render_template("timetable/subject_register.html", subject_data=None, assignments_data=None)
+            elif subject_data["subject_name"] == subject_name:
                 db.execute(
                 "DELETE FROM subject WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
                  ).fetchone()
                 db.commit()
-            if assignment_data["subject_name"] == subject_name:
+
+            if timetable_data["subject_name"] == subject_name:
+                db.execute("DELETE FROM timetable WHERE subject_name = ? AND user_id = ?", (subject_name, session["user_id"], )).fetchone()
+                db.commit()
+
+            if assignment_data is None:
+                return redirect(url_for("timetable.index"))
+            elif assignment_data["subject_name"] == subject_name:
                 db.execute(
                 "DELETE FROM assignment  WHERE subject_name = ? AND user_id = ? ", (subject_name, session["user_id"], )
                  ).fetchone()
-                db.commit()
-            if timetable_data["subject_name"] == subject_name:
-                db.execute("DELETE FROM timetable WHERE subject_name = ? AND user_id = ?", (subject_name, session["user_id"], )).fetchone()
                 db.commit()
             
             return redirect(url_for("timetable.index"))
@@ -407,7 +413,8 @@ def subject_register():
                 db.execute("UPDATE subject SET teacher_name = ?, classroom = ?, color = ? WHERE subject_name = ? AND user_id = ?",
                             (teacher, classroom, color, subject_name, session["user_id"])
                             )
-            elif(subject_name and teacher and classroom and color):
+            #elif(subject_name and teacher and classroom and color):
+            elif(subject_name and color):
                 db.execute("INSERT INTO subject (subject_name, teacher_name, classroom, user_id, color) VALUES (?, ?, ?, ?, ?)", 
                         (subject_name, teacher, classroom, session["user_id"], color)
                         )

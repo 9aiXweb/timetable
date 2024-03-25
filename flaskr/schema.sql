@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS timetable_select;
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
+    register_date TEXT, 
     email TEXT UNIQUE,
     password TEXT NOT NULL
 );
