@@ -70,10 +70,12 @@ def index():
             
             check_list = []
             check_list = request.form.getlist('checkbox')
-            
+   
             if check_list:
+    
                 
                 db = get_db()
+             
                 for subject in check_list:
                     
                     db.execute(
@@ -106,7 +108,7 @@ def index():
                     return render_template("timetable/subject_register.html", subject_data=subject_data, assignments_data=assignments_data)
                 
                 cursor = db.cursor()
-                cursor.execute("SELECT subject_name FROM subject")
+                cursor.execute("SELECT subject_name FROM subject WHERE user_id = ?", (session["user_id"],))
                 subject_all = cursor.fetchall()
                 db.close()
                 session['time'] = action
@@ -164,21 +166,20 @@ def index():
 
     vertical_length = int(timetable_select["vertical"])
     horizontal_length = int(timetable_select["horizontal"])
-    # vertical_length = int(timetable_select["vertical"])
-    # horizontal_length = int(timetable_select["horizontal"])
+
 
     if (vertical_length and horizontal_length) is None:
         vertical_length  = 7
         horizontal_length = 7  
         timetable_table = [[""] * 7 for _ in range(7)]  
-        # timetable_table_color = [[""] * 7 for _ in range(7)] 
+        
     elif timetable_select is not None:
        
        
         if  timetable_data is not None and len(timetable_data) > 0:
 
             timetable_table = [[""] * vertical_length for _ in range(horizontal_length)]  
-            # timetable_table_color = [[""] * vertical_length for _ in range(horizontal_length)]  
+            
             
 
             # # # timetableデータを行列に埋め込む
@@ -191,7 +192,7 @@ def index():
         else:
             
             timetable_table = [[""] * vertical_length for _ in range(horizontal_length)]  
-            # timetable_table_color = [[""] * vertical_length for _ in range(horizontal_length)]  
+            
             
         # else:
         #     flash("2")
