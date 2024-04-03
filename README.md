@@ -10,6 +10,8 @@
 - Open Terminal
 - Run the commands below
 ```console
+    pip install Flask
+
     flask --app flaskr init-db 
 
     flask --app flaskr run --debug
