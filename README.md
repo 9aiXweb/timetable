@@ -1,4 +1,15 @@
-# This is from the YouTube crash course. The JS code may be slightly different.
+# Timetable for School
 
-- flask --app flaskr run --debug --port <port No>
-- flask --app flaskr init-db
+## clone this github repository 
+```console
+    git clone https://github.com/9aiXweb/timetable.git
+```
+
+## How to run this repository ??
+- Open the cloned repository in VS Code
+- Open Terminal
+- Run the commands below
+```console
+    flask --app flaskr init-db
+    flask --app flaskr run --debug
+```
