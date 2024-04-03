@@ -1,6 +1,6 @@
 # Timetable for School
 
-## clone this github repository 
+## Clone this GitHub repository 
 ```console
     git clone https://github.com/9aiXweb/timetable.git
 ```
@@ -11,7 +11,7 @@
 - Run the commands below
 ```console
     flask --app flaskr init-db 
-    
+
     flask --app flaskr run --debug
 ```
 - Go to your local host port 5000 (default): http://127.0.0.1:5000/ 
